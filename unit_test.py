@@ -55,11 +55,20 @@ class TestGeomertry(unittest.TestCase):
         self.assertTrue(geo.inConvexPolygon(convex_hull, geo.Point2D(0.5,
                                                                      0.5)))
 
+    def test_sortByAngle(self):
+        pts = genPoints(10)
+        draw.drawTitle("test_sortByAngle")
+        draw.drawLine2Ds(pts, 'b')
+        draw.drawShow()
+        pts_ordered = geo.sortByAngle(geo.Point2D(0, 0), pts)
+        draw.drawLine2Ds(pts_ordered, 'r')
+        draw.drawShow()
+
 
 class TestConvexHull(unittest.TestCase):
     def __init__(self, methodName):
         super(TestConvexHull, self).__init__(methodName)
-        self.polygon_points_ = genPoints(2000)
+        self.polygon_points_ = genPoints(5000)
 
 
 # =============================================================================
@@ -94,6 +103,22 @@ class TestConvexHull(unittest.TestCase):
         t = time.perf_counter()
         res = ch.Jarvis1(self.polygon_points_)
         draw.drawTitle("test_Jarvis1 {}s".format(time.perf_counter() - t))
+        draw.drawPoint2Ds(self.polygon_points_)
+        draw.drawLine2Ds(res)
+        draw.drawShow()
+
+    def test_Jarvis2(self):
+        t = time.perf_counter()
+        res = ch.Jarvis2(self.polygon_points_)
+        draw.drawTitle("test_Jarvis2 {}s".format(time.perf_counter() - t))
+        draw.drawPoint2Ds(self.polygon_points_)
+        draw.drawLine2Ds(res)
+        draw.drawShow()
+
+    def test_GrahamScane(self):
+        t = time.perf_counter()
+        res = ch.GrahamScane(self.polygon_points_)
+        draw.drawTitle("test_GrahamScane {}s".format(time.perf_counter() - t))
         draw.drawPoint2Ds(self.polygon_points_)
         draw.drawLine2Ds(res)
         draw.drawShow()

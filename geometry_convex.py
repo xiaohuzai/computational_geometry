@@ -14,12 +14,17 @@ class Point2D:
         self.y_ = y
 
     def __repr__(self):
-        return "Point2D("+str(self.x_)+", "+str(self.y_)+")"
+        return "Point2D(" + str(self.x_) + ", " + str(self.y_) + ")"
 
     def __eq__(self, o) -> bool:
         if isinstance(o, Point2D):
             return math.isclose(self.x_, o.x_) and math.isclose(self.y_, o.y_)
         return False
+
+    def __sub__(self, o):
+        if isinstance(o, Point2D):
+            return Point2D(self.x_ - o.x_, self.y_ - o.y_)
+        raise Exception('type error')
 
 
 class Vector2D:
@@ -27,8 +32,12 @@ class Vector2D:
         self.x_ = x
         self.y_ = y
 
+    @classmethod
+    def consByPoint2D(self, p: Point2D):
+        return self(p.x_, p.y_)
+
     def __repr__(self):
-        return "Vector2D("+str(self.x_)+", "+str(self.y_)+")"
+        return "Vector2D(" + str(self.x_) + ", " + str(self.y_) + ")"
 
     def __eq__(self, o) -> bool:
         if isinstance(o, Vector2D):
@@ -54,7 +63,8 @@ def toLeft(p: Point2D, q: Point2D, s: Point2D) -> bool:
     return area2(p, q, s) > 0
 
 
-def getLineIntersection(p0: Point2D, p1: Point2D, q0: Point2D, q1: Point2D, res: Point2D) -> bool:
+def getLineIntersection(p0: Point2D, p1: Point2D, q0: Point2D, q1: Point2D,
+                        res: Point2D) -> bool:
     '''
     求p0p1线段和q0q1线段是否有交点
     '''
@@ -116,6 +126,7 @@ def calcAngle(v: Vector2D) -> float:
         res = 2 * math.pi + res
     return res
 
+
 def calcAngleDiff(v1: Vector2D, v2: Vector2D) -> float:
     '''
     计算v1 v2的夹角
@@ -126,5 +137,36 @@ def calcAngleDiff(v1: Vector2D, v2: Vector2D) -> float:
         + v2在v1右边.
         - v2在v1左边
     '''
-    
+
     return calcAngle(v1) - calcAngle(v2)
+
+
+def LTL(points: List[Point2D]) -> int:
+    '''
+    寻找the lowest-then-leftmost point
+    Returns
+    -------
+    int
+        LTL idx.
+    '''
+    ltl_idx = 0
+    for i in range(1, len(points)):
+        if points[i].y_ < points[ltl_idx].y_ or (
+                points[i].y_ == points[ltl_idx].y_
+                and points[i].x_ < points[ltl_idx].x_):
+            ltl_idx = i
+    return ltl_idx
+
+
+def sortByAngle(p: Point2D, points: List[Point2D]) -> List[Point2D]:
+    return sorted(points,
+                  key=lambda pt: calcAngle(Vector2D.consByPoint2D(pt - p)))
+
+def nextStepPt(points: List[Point2D], i: int, step: int) -> Point2D:
+    '''
+    找i点接下来step步长的点，step可正可负
+    '''
+    pts_size = len(points)
+    if pts_size == 0:
+        return Point2D()
+    return points[(i + step) % pts_size]
