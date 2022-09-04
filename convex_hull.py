@@ -9,6 +9,7 @@ from typing import List, Tuple
 import copy
 import sys
 import math
+from collections import deque
 
 # =============================================================================
 # Extreme Points Algo. O(n^4)
@@ -28,17 +29,19 @@ def extremePoint(points: List[geo.Point2D]) -> List[geo.Point2D]:
     res = []
     not_extreme_idx = set()
     for i in range(0, pt_size):
-        for j in range(i+1, pt_size):
-            for k in range(j+1, pt_size):
+        for j in range(i + 1, pt_size):
+            for k in range(j + 1, pt_size):
                 for t in range(0, pt_size):
                     if t == i or t == j or t == k:
                         continue
-                    if geo.inTriangle(points[i], points[j], points[k], points[t]):
+                    if geo.inTriangle(points[i], points[j], points[k],
+                                      points[t]):
                         not_extreme_idx.add(t)
     for i in range(0, pt_size):
         if i not in not_extreme_idx:
             res.append(points[i])
     return res
+
 
 # =============================================================================
 # Extreme Edge Algo. O(n^3)
@@ -53,7 +56,8 @@ def checkToLeftEdge(points: List[geo.Point2D], i: int, j: int) -> bool:
     if i < 0 or i >= pts_size or j < 0 or j >= pts_size:
         return False
     for k in range(0, pts_size):
-        if k != i and k != j and not geo.toLeft(points[i], points[j], points[k]):
+        if k != i and k != j and not geo.toLeft(points[i], points[j],
+                                                points[k]):
             return False
     return True
 
@@ -85,7 +89,8 @@ def markEE(points: List[geo.Point2D]) -> List[geo.Point2D]:
         found = False
         for i in range(0, pts_size):  # O(n)
             # O(n)
-            if not marked[i] and i != convex_vertex_idx and checkToLeftEdge(points, convex_vertex_idx, i):
+            if not marked[i] and i != convex_vertex_idx and checkToLeftEdge(
+                    points, convex_vertex_idx, i):
                 marked[convex_vertex_idx] = True
                 res.append(points[convex_vertex_idx])
                 convex_vertex_idx = i
@@ -96,27 +101,17 @@ def markEE(points: List[geo.Point2D]) -> List[geo.Point2D]:
     res.append(points[convex_vertex_idx])
     return res
 
+
 # =============================================================================
 # Incremental Construction Algo. O(n2)
 # =============================================================================
-
-
-def nextStepPt(points: List[geo.Point2D], i: int, step: int) -> geo.Point2D:
-    '''
-    找i点接下来step步长的点，step可正可负
-    '''
-    pts_size = len(points)
-    if pts_size == 0:
-        return geo.Point2D()
-    return points[(i + step) % pts_size]
-
-
-def vertexPattern(points: List[geo.Point2D], i: int, s: geo.Point2D) -> Tuple[bool, bool]:
+def vertexPattern(points: List[geo.Point2D], i: int,
+                  s: geo.Point2D) -> Tuple[bool, bool]:
     '''
     找出s->point[i]的pattern，即判断i的prev和next相对s->i的左右
     '''
-    prev_pt = nextStepPt(points, i, -1)
-    next_pt = nextStepPt(points, i, 1)
+    prev_pt = geo.nextStepPt(points, i, -1)
+    next_pt = geo.nextStepPt(points, i, 1)
     cur_pt = points[i]
     prev_pt_left = geo.toLeft(s, cur_pt, prev_pt)
     next_pt_left = geo.toLeft(s, cur_pt, next_pt)
@@ -147,55 +142,42 @@ def incremenalConstruction(points: List[geo.Point2D]) -> List[geo.Point2D]:
         if t_idx < 0 or s_idx < 0:
             continue
         if s_idx > t_idx:
-            new_res = copy.deepcopy(res[:t_idx+1])
+            new_res = copy.deepcopy(res[:t_idx + 1])
             new_res.append(points[i])
             new_res.extend(res[s_idx:])
             res = new_res
         else:
-            new_res = copy.deepcopy(res[s_idx: t_idx+1])
+            new_res = copy.deepcopy(res[s_idx:t_idx + 1])
             new_res.append(points[i])
             res = new_res
     return res
 
+
 # =============================================================================
 # Jarvis March O(nh)
 # =============================================================================
-
-
-def LTL(points: List[geo.Point2D]) -> int:
-    '''
-    寻找the lowest-then-leftmost point
-    Returns
-    -------
-    int
-        LTL idx.
-    '''
-    ltl_idx = 0
-    for i in range(1, len(points)):
-        if points[i].y_ < points[ltl_idx].y_ or (points[i].y_ == points[ltl_idx].y_ and points[i].x_ < points[ltl_idx].x_):
-            ltl_idx = i
-    return ltl_idx
-
-
 def Jarvis1(points: List[geo.Point2D]) -> List[geo.Point2D]:
     '''
     Jarvis算法计算convex point
     '''
     marked = [False for i in range(0, len(points))]
     res = []
-    ltl_idx = LTL(points)
+    ltl_idx = geo.LTL(points)
     res.append(points[ltl_idx])
     marked[ltl_idx] = True
     vector_origin = geo.Vector2D(1.0, 0.0)
+    size = len(points)
     while True:
         angle_min = sys.float_info.max
         found = False
         next_idx = -1
-        for i in range(0, len(points)):
+        for i in range(0, size):
             if i == ltl_idx:
                 continue
-            angle_diff = geo.calcAngleDiff(vector_origin, geo.Vector2D(
-                points[i].x_ - points[ltl_idx].x_, points[i].y_ - points[ltl_idx].y_))
+            angle_diff = geo.calcAngleDiff(
+                vector_origin,
+                geo.Vector2D(points[i].x_ - points[ltl_idx].x_,
+                             points[i].y_ - points[ltl_idx].y_))
             if angle_diff >= 0:
                 continue
             if math.fabs(angle_diff) < math.fabs(angle_min):
@@ -204,9 +186,69 @@ def Jarvis1(points: List[geo.Point2D]) -> List[geo.Point2D]:
                 found = True
         if not found or marked[next_idx]:
             break
-        vector_origin = geo.Vector2D(
-            points[next_idx].x_ - points[ltl_idx].x_, points[next_idx].y_ - points[ltl_idx].y_)
+        vector_origin = geo.Vector2D(points[next_idx].x_ - points[ltl_idx].x_,
+                                     points[next_idx].y_ - points[ltl_idx].y_)
         ltl_idx = next_idx
         marked[next_idx] = True
         res.append(points[next_idx])
     return res
+
+
+def Jarvis2(points: List[geo.Point2D]) -> List[geo.Point2D]:
+    '''
+    Jarvis算法计算convex point
+    '''
+    marked = [False for i in range(0, len(points))]
+    res = []
+    ltl_idx = geo.LTL(points)
+    res.append(points[ltl_idx])
+    marked[ltl_idx] = True
+    size = len(points)
+    while True:
+        q_idx = -1
+        for i in range(0, size):
+            if i == ltl_idx or i == q_idx:
+                continue
+            if q_idx == -1 or not geo.toLeft(points[ltl_idx], points[q_idx],
+                                             points[i]):
+                q_idx = i
+        if q_idx == -1 or marked[q_idx]:
+            break
+        marked[q_idx] = True
+        res.append(points[q_idx])
+        ltl_idx = q_idx
+    return res
+
+
+# =============================================================================
+# Graham Scan O(nlog(n))
+# =============================================================================
+def GrahamScane(points: List[geo.Point2D]) -> List[geo.Point2D]:
+    points_size = len(points)
+    if points_size < 3:
+        return []
+    s = []  # extrem points
+    t = []  # sorted by angle
+    ltl_idx = geo.LTL(points)
+    s.append(points[ltl_idx])
+    points_size = len(points)
+    remain_pts = []
+    if ltl_idx == points_size - 1:
+        remain_pts = points[0:ltl_idx]
+    else:
+        remain_pts = points[0:ltl_idx] + points[ltl_idx + 1:]
+    t = geo.sortByAngle(points[ltl_idx], remain_pts)
+    t.reverse()
+    while len(t) > 0:
+        t_top = t.pop()
+        while len(s) > 1:
+            s_top = s[-1]
+            s_second = s[-2]
+            if geo.toLeft(s_second, s_top, t_top):
+                s.append(t_top)
+                break
+            else:
+                s.pop()
+        if len(s) < 2:
+            s.append(t_top)
+    return s
