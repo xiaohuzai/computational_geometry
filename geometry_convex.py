@@ -27,6 +27,15 @@ class Point2D:
         raise Exception('type error')
 
 
+class Interval:
+    def __init__(self, lower=0.0, upper=0.0) -> None:
+        self.lower_ = lower
+        self.upper_ = upper
+
+    def __repr__(self) -> str:
+        return "Interval(" + str(self.lower_) + ", " + str(self.upper_) + ")"
+
+
 class Vector2D:
     def __init__(self, x=0.0, y=0.0):
         self.x_ = x
@@ -161,6 +170,7 @@ def LTL(points: List[Point2D]) -> int:
 def sortByAngle(p: Point2D, points: List[Point2D]) -> List[Point2D]:
     return sorted(points,
                   key=lambda pt: calcAngle(Vector2D.consByPoint2D(pt - p)))
+
 
 def nextStepPt(points: List[Point2D], i: int, step: int) -> Point2D:
     '''
