@@ -5,8 +5,9 @@ Created on Sun Aug 28 19:59:23 2022
 @author: yan.huang
 """
 
-import geometry_convex as geo
+import geometry_util as geo
 import convex_hull as ch
+import geo_intersection.geo_intersection as geo_intersection
 import draw
 import unittest
 import numpy as np
@@ -22,6 +23,16 @@ def genPoints(m: int) -> List[geo.Point2D]:
         res.append(geo.Point2D(x[i], y[i]))
     return res
 
+
+def genSegments(m: int) -> List[geo.Segment2D]:
+    x = np.random.rand(m)
+    y = np.random.rand(m)
+    res = []
+    for i in range(0, len(x), 2):
+        res.append(
+            geo.Segment2D(geo.Point2D(x[i], y[i]),
+                          geo.Point2D(x[i + 1], y[i + 1])))
+    return res
 
 class TestGeomertry(unittest.TestCase):
     def test_in_triangle1(self):
@@ -61,6 +72,7 @@ class TestGeomertry(unittest.TestCase):
         draw.drawLine2Ds(pts, 'b')
         draw.drawShow()
         pts_ordered = geo.sortByAngle(geo.Point2D(0, 0), pts)
+        draw.drawTitle("test_sortByAngle")
         draw.drawLine2Ds(pts_ordered, 'r')
         draw.drawShow()
 
@@ -121,6 +133,17 @@ class TestConvexHull(unittest.TestCase):
         draw.drawTitle("test_GrahamScane {}s".format(time.perf_counter() - t))
         draw.drawPoint2Ds(self.polygon_points_)
         draw.drawLine2Ds(res)
+        draw.drawShow()
+
+
+class TestGeoIntersection(unittest.TestCase):
+    def __init__(self, methodName: str = ...) -> None:
+        super().__init__(methodName)
+        self.segments_ = genSegments(20)
+
+    def test_IID(self):
+        draw.drawTitle("test_draw_segments")
+        draw.drawSegments(self.segments_)
         draw.drawShow()
 
 if __name__ == '__main__':
