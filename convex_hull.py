@@ -4,7 +4,7 @@ Created on Sun Aug 28 20:25:45 2022
 
 @author: yan.huang
 """
-import geometry_convex as geo
+import geometry_util as geo
 from typing import List, Tuple
 import copy
 import sys

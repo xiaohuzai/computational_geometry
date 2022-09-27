@@ -6,7 +6,7 @@ Created on Mon Aug 29 11:31:41 2022
 """
 
 from turtle import width
-import geometry_convex as geo
+import geometry_util as geo
 from typing import List
 import matplotlib.pyplot as plt
 
@@ -31,6 +31,10 @@ def drawLine2Ds(points: List[geo.Point2D], color='r'):
                   y[(i + 1) % size] - y[i],
                   length_includes_head=True,
                   color=color)
+        
+def drawSegments(segments: List[geo.Segment2D], color='r'):
+    for s in segments:
+        plt.plot((s.start_.x_, s.end_.x_), (s.start_.y_, s.end_.y_))
 
 def drawShow():
     plt.show()
