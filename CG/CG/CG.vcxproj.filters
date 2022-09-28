@@ -24,12 +24,18 @@
     <ClCompile Include="geometry_util.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="convex_hull.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_geo_type.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="geometry_util.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="convex_hull.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

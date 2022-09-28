@@ -1,6 +1,5 @@
 #include "base_geo_type.h"
 
-
 double Point2D::x() const { return x_; }
 double Point2D::y() const { return y_; }
 bool Point2D::operator==(const Point2D& o) {

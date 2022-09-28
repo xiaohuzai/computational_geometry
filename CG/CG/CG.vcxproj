@@ -134,11 +134,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="base_geo_type.cpp" />
+    <ClCompile Include="convex_hull.cpp" />
     <ClCompile Include="geometry_util.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_geo_type.h" />
+    <ClInclude Include="convex_hull.h" />
     <ClInclude Include="geometry_util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
