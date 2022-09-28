@@ -1,11 +1,12 @@
 #include "geometry_util.h"
+#include <algorithm>
 
 double area2(const Point2D& p, const Point2D& q, const Point2D& s) {
 	return p.x() * q.y() - p.y() * q.x() + q.x() * s.y() - q.y() * s.x() + s.x() * p.y() - s.y() * p.x();
 }
 
 bool to_left(const Point2D& p, const Point2D& q, const Point2D& s) {
-	return area2(p, q, s);
+	return area2(p, q, s) > 0;
 }
 
 bool get_intersect(const Point2D& p0, const Point2D& p1, const Point2D& q0, const Point2D& q1, Point2D& res) {
@@ -31,7 +32,8 @@ bool in_triangle(const Point2D& p, const Point2D& q, const Point2D& r, const Poi
 		if (to_left(p, q, s) && to_left(q, r, s) && to_left(r, p, s)) {
 			return true;
 		}
-	} else {
+	}
+	else {
 		if (to_left(r, q, s) && to_left(q, p, s) && to_left(p, r, s)) {
 			return true;
 		}
@@ -43,8 +45,8 @@ bool in_convex_polygon(const std::vector<Point2D>& extrem_points, const Point2D&
 	if (extrem_points.size() < 3U) {
 		return false;
 	}
-	const auto &pt0 = extrem_points[0];
-	const auto &pt1 = extrem_points[1];
+	const auto& pt0 = extrem_points[0];
+	const auto& pt1 = extrem_points[1];
 	for (auto itr = extrem_points.cbegin() + 1; itr != extrem_points.cend(); ++itr) {
 		if (in_triangle(pt0, pt1, *itr, pt)) {
 			return true;
@@ -53,3 +55,34 @@ bool in_convex_polygon(const std::vector<Point2D>& extrem_points, const Point2D&
 	return false;
 }
 
+double calc_angle(const Vector2D& v) {
+	auto res = std::atan2(v.y(), v.x());
+	if (res < 0) {
+		res = 2 * PI + res;
+	}
+	return res;
+}
+
+std::vector<Point2D> sort_by_angle(const Point2D& p, const std::vector<Point2D>& points) {
+	std::vector<Point2D> new_pts = points;
+	std::sort(new_pts.begin(), new_pts.end(), [&](const auto& l, const auto& r) {
+		return calc_angle_diff(l - p, r - p) < 0;
+		});
+	return new_pts;
+}
+
+double calc_angle_diff(const Vector2D& v1, const Vector2D& v2) {
+	return calc_angle(v1) - calc_angle(v2);
+}
+
+int ltl_pt(const std::vector<Point2D>& points) {
+	int ltl_idx = 0;
+	for (size_t i = 0; i < points.size(); ++i) {
+		if (points[i].y() < points[ltl_idx].y() ||
+			(almost_equal(points[i].y(), points[ltl_idx].y()) &&
+				points[i].x() < points[ltl_idx].x())) {
+			ltl_idx = i;
+		}
+	}
+	return ltl_idx;
+}

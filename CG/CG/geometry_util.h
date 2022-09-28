@@ -1,6 +1,12 @@
 #pragma once
 #include "base_geo_type.h"
 #include <vector>
+
+template<typename T>
+bool almost_equal(T l, T r) {
+	return std::fabs(l - r) < std::numeric_limits<T>::epsilon();
+}
+
 /*
 	  s是否在pq左侧
 	  使用行列式
@@ -28,4 +34,34 @@ bool counter_clockwise(const Point2D& p, const Point2D& q, const Point2D& r);
 */
 bool in_triangle(const Point2D& p, const Point2D& q, const Point2D& r, const Point2D& s);
 
-bool in_convex_polygon(const std::vector<Point2D> &extrem_points, const Point2D &pt);
+/*
+* 判断pt是否在以extrem_points组成的凸包内
+*/
+bool in_convex_polygon(const std::vector<Point2D>& extrem_points, const Point2D& pt);
+
+/*
+* 计算一个向量的角度
+* 0~2pi
+*/
+double calc_angle(const Vector2D& v);
+
+std::vector<Point2D> sort_by_angle(const Point2D& p, const std::vector<Point2D>& points);
+
+/*
+* 计算v1 v2的夹角
+* Returns
+	-------
+	float
+		+ v2在v1右边.
+		- v2在v1左边
+*/
+double calc_angle_diff(const Vector2D& v1, const Vector2D& v2);
+
+/*
+* 寻找the lowest-then-leftmost point
+* Returns
+	-------
+	int
+		LTL idx.
+*/
+int ltl_pt(const std::vector<Point2D>& points);

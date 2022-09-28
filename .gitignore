@@ -1,1 +1,4 @@
 __pycache__/*
+CG/.vs/*
+*.obj
+*.tlog
