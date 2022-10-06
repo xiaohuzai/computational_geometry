@@ -1,5 +1,3 @@
-__pycache__/*
-CG/.vs/*
-CG/CG/x64/*
-*.obj
-*.tlog
+CG/.vs/
+CG/CG/x64/
+CG/x64/
