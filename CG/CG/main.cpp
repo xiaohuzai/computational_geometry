@@ -31,7 +31,16 @@ PYBIND11_MODULE(CG, m) {
 
 	// convex_hull
 	pybind11::class_<ConvexHull>(m, "convex_hull");
-	pybind11::class_<ExtremEdgeAlgo, ConvexHull>(m, "extrem_edge_algo")
+	pybind11::class_<ExtremEdgeAlgo, ConvexHull>(m, "ExtremEdgeAlgo")
 		.def(pybind11::init<>())
 		.def("gen_extrem_points", &ExtremEdgeAlgo::gen_extrem_points, "points"_a);
+	pybind11::class_<IncrementalAlgo, ConvexHull>(m, "IncrementalAlgo")
+		.def(pybind11::init<>())
+		.def("gen_extrem_points", &IncrementalAlgo::gen_extrem_points, "points"_a);
+	pybind11::class_<JarvisMarchAlgo, ConvexHull>(m, "JarvisMarchAlgo")
+		.def(pybind11::init<>())
+		.def("gen_extrem_points", &JarvisMarchAlgo::gen_extrem_points, "points"_a);
+	pybind11::class_<GrahamScaneAlgo, ConvexHull>(m, "GrahamScaneAlgo")
+		.def(pybind11::init<>())
+		.def("gen_extrem_points", &GrahamScaneAlgo::gen_extrem_points, "points"_a);
 }

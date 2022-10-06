@@ -2,45 +2,43 @@
 #include "base_geo_type.h"
 #include <vector>
 
-template<typename T>
-bool almost_equal(T l, T r) {
-	return std::fabs(l - r) < std::numeric_limits<T>::epsilon();
-}
-
 /*
-	  sÊÇ·ñÔÚpq×ó²à
-	  Ê¹ÓÃĞĞÁĞÊ½
+	  sæ˜¯å¦åœ¨pqå·¦ä¾§
+	  ä½¿ç”¨è¡Œåˆ—å¼
 	  2*S = | p.x_  p.y_  1 |
 			| q.x_  q.y_  1 |
 			| s.x_  s.y_  1 |
 */
 double area2(const Point2D& p, const Point2D& q, const Point2D& s);
 
+/*
+*s æ˜¯å¦åœ¨pqå·¦ä¾§
+*/
 bool to_left(const Point2D& p, const Point2D& q, const Point2D& s);
 
 /*
-	Çóp0p1Ïß¶ÎºÍq0q1Ïß¶ÎÊÇ·ñÓĞ½»µã
-	p0 + t*p == q0 + u*q, p¡¢qÎªÏòÁ¿
+	æ±‚p0p1çº¿æ®µå’Œq0q1çº¿æ®µæ˜¯å¦æœ‰äº¤ç‚¹
+	p0 + t*p == q0 + u*q, pã€qä¸ºå‘é‡
 */
 bool get_intersect(const Point2D& p0, const Point2D& p1, const Point2D& q0, const Point2D& q1, Point2D& res);
 
 /*
-* ÅĞ¶Ïp,q,sÊÇ·ñÊÇÄæÊ±ÕëÅÅÁĞ£¬Çó²æ»ı
+* åˆ¤æ–­p,q,sæ˜¯å¦æ˜¯é€†æ—¶é’ˆæ’åˆ—ï¼Œæ±‚å‰ç§¯
 */
 bool counter_clockwise(const Point2D& p, const Point2D& q, const Point2D& r);
 
 /*
-* ÅĞ¶ÏsÊÇ·ñÔÚp¡¢q¡¢r×é³ÉµÄÈı½ÇĞÎÄÚ
+* åˆ¤æ–­sæ˜¯å¦åœ¨pã€qã€rç»„æˆçš„ä¸‰è§’å½¢å†…
 */
 bool in_triangle(const Point2D& p, const Point2D& q, const Point2D& r, const Point2D& s);
 
 /*
-* ÅĞ¶ÏptÊÇ·ñÔÚÒÔextrem_points×é³ÉµÄÍ¹°üÄÚ
+* åˆ¤æ–­ptæ˜¯å¦åœ¨ä»¥extrem_pointsç»„æˆçš„å‡¸åŒ…å†…
 */
 bool in_convex_polygon(const std::vector<Point2D>& extrem_points, const Point2D& pt);
 
 /*
-* ¼ÆËãÒ»¸öÏòÁ¿µÄ½Ç¶È
+* è®¡ç®—ä¸€ä¸ªå‘é‡çš„è§’åº¦
 * 0~2pi
 */
 double calc_angle(const Vector2D& v);
@@ -48,20 +46,22 @@ double calc_angle(const Vector2D& v);
 std::vector<Point2D> sort_by_angle(const Point2D& p, const std::vector<Point2D>& points);
 
 /*
-* ¼ÆËãv1 v2µÄ¼Ğ½Ç
+* è®¡ç®—v1 v2çš„å¤¹è§’
 * Returns
 	-------
 	float
-		+ v2ÔÚv1ÓÒ±ß.
-		- v2ÔÚv1×ó±ß
+		+ v2åœ¨v1å³è¾¹.
+		- v2åœ¨v1å·¦è¾¹
 */
 double calc_angle_diff(const Vector2D& v1, const Vector2D& v2);
 
 /*
-* Ñ°ÕÒthe lowest-then-leftmost point
+* å¯»æ‰¾the lowest-then-leftmost point
 * Returns
 	-------
 	int
 		LTL idx.
 */
 int ltl_pt(const std::vector<Point2D>& points);
+
+Point2D next_step_pt(const std::vector<Point2D>& points, size_t idx, int step);
