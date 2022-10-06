@@ -2,11 +2,10 @@
 
 double Point2D::x() const { return x_; }
 double Point2D::y() const { return y_; }
-bool Point2D::operator==(const Point2D& o) {
-	return std::fabs(this->x() - o.x()) < std::numeric_limits<double>::epsilon() &&
-		std::fabs(this->y() - o.y()) < std::numeric_limits<double>::epsilon();
+bool Point2D::operator==(const Point2D& o) const {
+	return almost_equal(this->x(), o.x()) && almost_equal(this->y(), o.y());
 }
-bool Point2D::operator!=(const Point2D& o) {
+bool Point2D::operator!=(const Point2D& o) const {
 	return !(*this == o);
 }
 

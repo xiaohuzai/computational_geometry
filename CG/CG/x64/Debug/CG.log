@@ -1,2 +1,5 @@
-﻿    正在创建库 C:\Users\huangyan1\Desktop\computational_geometry\CG\x64\Debug\CG.lib 和对象 C:\Users\huangyan1\Desktop\computational_geometry\CG\x64\Debug\CG.exp
+﻿  convex_hull.cpp
+C:\Users\huangyan1\Desktop\computational_geometry\CG\CG\geometry_util.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\huangyan1\Desktop\computational_geometry\CG\CG\convex_hull.cpp(85,14): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\huangyan1\Desktop\computational_geometry\CG\CG\convex_hull.cpp(88,14): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
   CG.vcxproj -> C:\Users\huangyan1\Desktop\computational_geometry\CG\x64\Debug\CG.pyd

@@ -66,7 +66,7 @@ double calc_angle(const Vector2D& v) {
 std::vector<Point2D> sort_by_angle(const Point2D& p, const std::vector<Point2D>& points) {
 	std::vector<Point2D> new_pts = points;
 	std::sort(new_pts.begin(), new_pts.end(), [&](const auto& l, const auto& r) {
-		return calc_angle_diff(l - p, r - p) < 0;
+		return to_left(p, l, r);
 		});
 	return new_pts;
 }
@@ -85,4 +85,12 @@ int ltl_pt(const std::vector<Point2D>& points) {
 		}
 	}
 	return ltl_idx;
+}
+
+Point2D next_step_pt(const std::vector<Point2D>& points, size_t idx, int step) {
+	if (points.empty()) {
+		return {};
+	}
+	auto size = points.size();
+	return points[(idx + step + size) % size];
 }

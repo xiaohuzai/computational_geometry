@@ -1,4 +1,6 @@
 #include "convex_hull.h"
+#include <deque>
+#include <algorithm>
 
 std::vector<Point2D> ExtremEdgeAlgo::gen_extrem_points(const std::vector<Point2D>& points) const {
 	auto pts_size = points.size();
@@ -54,4 +56,127 @@ bool ExtremEdgeAlgo::to_left_edge(const std::vector<Point2D>& points, int i, int
 		}
 	}
 	return true;
+}
+
+std::vector<Point2D> IncrementalAlgo::gen_extrem_points(const std::vector<Point2D>& points) const {
+	if (points.size() < 2U) {
+		return points;
+	}
+	auto res = std::vector<Point2D>{ points[0], points[1] };
+	// 找到一个逆时针排序
+	auto itr = std::find_if(points.cbegin() + 2, points.cend(), [&](const auto& p) {return counter_clockwise(res[0], res[1], p); });
+	if (itr == points.cend()) {
+		std::reverse(res.begin(), res.end());
+		itr = std::find_if(points.cbegin() + 2, points.cend(), [&](const auto& p) {return counter_clockwise(res[0], res[1], p); });
+		if (itr == points.cend()) {
+			return points;
+		}
+	}
+	res.push_back(*itr);
+	for (size_t i = 0; i < points.size(); ++i) {
+		int t_idx = -1;  // 所有的点都points[idx]->points[t_idx]的右边
+		int s_idx = -1;  // 所有的点都points[idx]->points[t_idx]的左边
+		for (size_t j = 0; j < res.size(); ++j) {
+			if (points[i] == res[j] || (t_idx >= 0 && s_idx >= 0)) {
+				break;
+			}
+			auto pattern = vertex_pattern(res, points[i], j);
+			if (!pattern.first && !pattern.second && t_idx < 0) {
+				t_idx = j;
+			}
+			if (pattern.first && pattern.second && s_idx < 0) {
+				s_idx = j;
+			}
+		}
+		if (t_idx < 0 || s_idx < 0) {
+			continue;
+		}
+		auto new_res = std::vector<Point2D>{};
+		if (s_idx > t_idx) {
+			new_res.insert(new_res.end(), res.cbegin(), res.cbegin() + t_idx + 1);
+			new_res.push_back(points[i]);
+			new_res.insert(new_res.end(), res.cbegin() + s_idx, res.cend());
+		}
+		else {
+			new_res.insert(new_res.end(), res.cbegin() + s_idx, res.cbegin() + t_idx + 1);
+			new_res.push_back(points[i]);
+		}
+		res = new_res;
+	}
+	return res;
+}
+
+std::pair<bool, bool> IncrementalAlgo::vertex_pattern(const std::vector<Point2D>& points, const Point2D& s, size_t idx) const {
+	auto prev_pt = next_step_pt(points, idx, -1);
+	auto next_pt = next_step_pt(points, idx, 1);
+	auto cur_pt = points[idx];
+	return { to_left(s, cur_pt, prev_pt), to_left(s, cur_pt, next_pt) };
+}
+
+std::vector<Point2D> JarvisMarchAlgo::gen_extrem_points(const std::vector<Point2D>& points) const {
+	auto marked = std::vector<bool>(points.size(), false);
+	auto res = std::vector<Point2D>{};
+	auto ltl_idx = ltl_pt(points);
+	auto last_idx = ltl_idx;
+	res.push_back(points[ltl_idx]);
+	marked[ltl_idx] = true;
+	while (true) {
+		auto cur_idx = -1;
+		for (int i = 1; i < points.size(); ++i) {
+			if (i == last_idx) {
+				continue;
+			}
+			if (cur_idx == -1 || to_left(points[last_idx], points[cur_idx], points[i])) {
+				cur_idx = i;
+			}
+		}
+		if (cur_idx == -1 || marked[cur_idx]) {
+			break;
+		}
+		marked[cur_idx] = true;
+		res.push_back(points[cur_idx]);
+		last_idx = cur_idx;
+	}
+	return res;
+}
+
+std::vector<Point2D> GrahamScaneAlgo::gen_extrem_points(const std::vector<Point2D>& points) const {
+	if (points.size() <= 3U) {
+		return points;
+	}
+	auto res = std::deque<Point2D>{};
+	auto sorted_points = std::deque<Point2D>{};
+	auto ltl_idx = ltl_pt(points);
+	res.push_back(points[ltl_idx]);
+	if (ltl_idx == points.size() - 1) {
+		sorted_points.insert(sorted_points.end(), points.cbegin(), points.cend() - 1);
+	}
+	else {
+		sorted_points.insert(sorted_points.end(), points.cbegin(), points.cbegin() + ltl_idx);
+		sorted_points.insert(sorted_points.end(), points.cbegin() + ltl_idx + 1, points.cend());
+	}
+	std::sort(sorted_points.begin(), sorted_points.end(), [&](const auto& l, const auto& r) {
+		return to_left(points[ltl_idx], l, r);
+		});
+	while (!sorted_points.empty()) {
+		auto sorted_points_top = sorted_points[0];
+		sorted_points.pop_front();
+		while (res.size() > 1U) {
+			auto res_top = res[0];
+			auto res_second = res[1];
+			if (to_left(res_second, res_top, sorted_points_top)) {
+				res.push_front(sorted_points_top);
+				break;
+			}
+			else {
+				res.pop_front();
+			}
+		}
+		if (res.size() < 2U) {
+			res.push_front(sorted_points_top);
+		}
+	}
+	auto res_vec = std::vector<Point2D>(res.cbegin(), res.cend());
+	std::reverse(res_vec.begin(), res_vec.end());
+	return res_vec;
 }
