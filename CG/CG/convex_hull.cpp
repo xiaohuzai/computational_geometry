@@ -179,4 +179,5 @@ std::vector<Point2D> GrahamScaneAlgo::gen_extrem_points(const std::vector<Point2
 	auto res_vec = std::vector<Point2D>(res.cbegin(), res.cend());
 	std::reverse(res_vec.begin(), res_vec.end());
 	return res_vec;
+	int a = 0;
 }
