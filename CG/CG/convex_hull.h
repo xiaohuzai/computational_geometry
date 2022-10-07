@@ -51,9 +51,14 @@ public:
 	std::vector<Point2D> gen_extrem_points(const std::vector<Point2D>& points) const override final;
 };
 
+/*
+*O(nlog(n))
+*/
 class GrahamScaneAlgo : public ConvexHull {
 public:
 	GrahamScaneAlgo() = default;
 	virtual ~GrahamScaneAlgo() {}
 	std::vector<Point2D> gen_extrem_points(const std::vector<Point2D>& points) const override final;
 };
+
+std::vector<Point2D> gen_extrem_points_by_cgal(const std::vector<Point2D>& points);
