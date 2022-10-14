@@ -28,7 +28,8 @@ class Segment2D {
 public:
 	Segment2D() = default;
 	Segment2D(const Point2D& start, const Point2D& end) : start_(start), end_(end) {}
-
+	const Point2D& start() const;
+	const Point2D& end() const;
 private:
 	Point2D start_{};
 	Point2D end_{};

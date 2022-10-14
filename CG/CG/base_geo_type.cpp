@@ -12,3 +12,11 @@ bool Point2D::operator!=(const Point2D& o) const {
 Point2D operator-(const Point2D& l, const Point2D& r) {
 	return { l.x() - r.x(), l.y() - r.y() };
 }
+
+const Point2D& Segment2D::start() const {
+	return start_;
+}
+
+const Point2D& Segment2D::end() const {
+	return end_;
+}

@@ -4,6 +4,7 @@
 #include "base_geo_type.h"
 #include "geometry_util.h"
 #include "convex_hull.h"
+#include "geo_intersection.h"
 
 using namespace pybind11::literals;
 
@@ -18,6 +19,11 @@ PYBIND11_MODULE(CG, m) {
 		.def("y", &Point2D::y)
 		.def("__repr__", [](const Point2D& p) {return "Point2D(" + std::to_string(p.x()) + ", " + std::to_string(p.y()) + ")"; });
 	pybind11::bind_vector<std::vector<Point2D>>(m, "Point2DVector");
+	pybind11::class_<Segment2D>(m, "Segment2D")
+		.def(pybind11::init<Point2D, Point2D>())
+		.def("start", &Segment2D::start)
+		.def("end", &Segment2D::end);
+	pybind11::bind_vector<std::vector<Segment2D>>(m, "SegmentsVector");
 
 	// geometry_util
 	m.def("to_left", &to_left, "p"_a, "q"_a, "s"_a);
@@ -43,4 +49,10 @@ PYBIND11_MODULE(CG, m) {
 	pybind11::class_<GrahamScaneAlgo, ConvexHull>(m, "GrahamScaneAlgo")
 		.def(pybind11::init<>())
 		.def("gen_extrem_points", &GrahamScaneAlgo::gen_extrem_points, "points"_a);
+	m.def("gen_extrem_points_by_cgal", &gen_extrem_points_by_cgal, "points"_a);
+
+	// geo_intersection
+	pybind11::class_<BentleyOttmanAlgo>(m, "BentleyOttmanAlgo")
+		.def(pybind11::init<>())
+		.def("get_intersection", &BentleyOttmanAlgo::get_intersection, "points"_a);
 }

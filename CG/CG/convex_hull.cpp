@@ -1,6 +1,8 @@
 #include "convex_hull.h"
 #include <deque>
 #include <algorithm>
+#include <CGAL/convex_hull_2.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
 std::vector<Point2D> ExtremEdgeAlgo::gen_extrem_points(const std::vector<Point2D>& points) const {
 	auto pts_size = points.size();
@@ -159,11 +161,10 @@ std::vector<Point2D> GrahamScaneAlgo::gen_extrem_points(const std::vector<Point2
 		return to_left(points[ltl_idx], l, r);
 		});
 	while (!sorted_points.empty()) {
-		auto sorted_points_top = sorted_points[0];
-		sorted_points.pop_front();
+		const auto& sorted_points_top = sorted_points[0];
 		while (res.size() > 1U) {
-			auto res_top = res[0];
-			auto res_second = res[1];
+			const auto& res_top = res[0];
+			const auto& res_second = res[1];
 			if (to_left(res_second, res_top, sorted_points_top)) {
 				res.push_front(sorted_points_top);
 				break;
@@ -175,9 +176,26 @@ std::vector<Point2D> GrahamScaneAlgo::gen_extrem_points(const std::vector<Point2
 		if (res.size() < 2U) {
 			res.push_front(sorted_points_top);
 		}
+		sorted_points.pop_front();
 	}
 	auto res_vec = std::vector<Point2D>(res.cbegin(), res.cend());
 	std::reverse(res_vec.begin(), res_vec.end());
 	return res_vec;
-	int a = 0;
+}
+
+std::vector<Point2D> gen_extrem_points_by_cgal(const std::vector<Point2D>& points) {
+	using Point_2 = CGAL::Exact_predicates_inexact_constructions_kernel::Point_2;
+	auto cgal_pts_tmp = std::vector<Point_2>{};
+	cgal_pts_tmp.reserve(points.size());
+	std::transform(points.cbegin(), points.cend(), std::back_inserter(cgal_pts_tmp), [](const auto& p) {
+		return Point_2{ p.x(), p.y() };
+		});
+	auto res_tmp = std::vector<Point_2>{};
+	CGAL::ch_graham_andrew(cgal_pts_tmp.cbegin(), cgal_pts_tmp.cend(), std::back_inserter(res_tmp));
+	auto res = std::vector<Point2D>{};
+	res.reserve(res_tmp.size());
+	std::transform(res_tmp.cbegin(), res_tmp.cend(), std::back_inserter(res), [](const auto& p) {
+		return Point2D{ p.x(), p.y() };
+		});
+	return res;
 }
