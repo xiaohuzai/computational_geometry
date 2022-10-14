@@ -1,35 +1,28 @@
 #pragma once
 #include "base_geo_type.h"
 #include <vector>
-#include <set>
 
 class BentleyOttmanAlgo {
 public:
+	std::vector<Point2D> get_intersection(const std::vector<Segment2D>& segs);
 private:
-	static double sweep_line_;
 	struct Event_ {
+		Event_(const Point2D& p, char type, const std::pair<int, int>& index)
+			:p_(p), type_(type), index_(index) {}
 		Point2D p_{};
-		bool is_left_{ true };
-		int index_{ -1 }; // 所属的segment在sorted_vector中的idx
+		char type_{ 0 }; // 0: left, 1: right, 2:intersect
+		std::pair<int, int>index_{ -1, -1 }; // 所属的Segment2D的index，如果是intersection，则从高到低排
+		bool operator<(const Event_& e) const { return p_.x() < e.p_.x(); }
+		bool operator>(const Event_& e) const { return p_.x() > e.p_.x(); }
 	};
 	struct LineSegment_ {
 		int index_{ -1 };
-		Point2D left_{};
-		Point2D right_{};
-		double get_y_by_x() const {
-			if (sweep_line_ < left_.x()) {
-				return left_.y();
-			}
-			if (sweep_line_ > right_.x()) {
-				return right_.y();
-			}
-			auto delta = (sweep_line_ - left_.x()) / (right_.x() - left_.x());
-			return left_.y() + delta * (right_.y() - left_.y());
-		}
-		bool operator<(const LineSegment_& l) const {
-			auto cur_y = get_y_by_x();
-			auto l_y = l.get_y_by_x();
-			return cur_y < l_y;
+		Segment2D segment_{};
+		double get_y_by_x(double x) const {
+			if (x < segment_.start().x()) { return segment_.start().y(); }
+			if (x > segment_.end().x()) { return segment_.end().y(); }
+			auto delta = (x - segment_.start().x()) / (segment_.end().x() - segment_.start().x());
+			return segment_.start().y() + delta * (segment_.end().y() - segment_.start().y());
 		}
 	};
 };

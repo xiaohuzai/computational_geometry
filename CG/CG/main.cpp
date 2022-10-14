@@ -4,6 +4,7 @@
 #include "base_geo_type.h"
 #include "geometry_util.h"
 #include "convex_hull.h"
+#include "geo_intersection.h"
 
 using namespace pybind11::literals;
 
@@ -49,4 +50,9 @@ PYBIND11_MODULE(CG, m) {
 		.def(pybind11::init<>())
 		.def("gen_extrem_points", &GrahamScaneAlgo::gen_extrem_points, "points"_a);
 	m.def("gen_extrem_points_by_cgal", &gen_extrem_points_by_cgal, "points"_a);
+
+	// geo_intersection
+	pybind11::class_<BentleyOttmanAlgo>(m, "BentleyOttmanAlgo")
+		.def(pybind11::init<>())
+		.def("get_intersection", &BentleyOttmanAlgo::get_intersection, "points"_a);
 }
